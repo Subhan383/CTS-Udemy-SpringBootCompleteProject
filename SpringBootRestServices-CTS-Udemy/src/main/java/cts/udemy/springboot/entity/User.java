@@ -6,18 +6,23 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Entity(name = "user")
 @Table(name = "user")
 public class User {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue
 	private int id;
 
+	@NotBlank(message="Username should not be empty")
 	@Column(name = "USER_NAME", length=50, nullable=false,unique=true)
 	private String username;
 
+	@Size(min=3,message="First name should be atleast 3 characters")
 	@Column(name = "FIRST_NAME", length=50, nullable=false)
 	private String firstname;
 

@@ -3,10 +3,14 @@ package cts.udemy.springboot.controller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,9 +24,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import cts.udemy.springboot.entity.User;
 import cts.udemy.springboot.exceptions.UserExistsException;
 import cts.udemy.springboot.exceptions.UserNotFoundException;
+import cts.udemy.springboot.exceptions.UsernameNotFoundException;
 import cts.udemy.springboot.service.UserService;
 
 @RestController
+@Validated
 public class UserController {
 
 	@Autowired
@@ -34,12 +40,13 @@ public class UserController {
 	}
 
 	@PostMapping("/users")
-	public ResponseEntity<Void> createUser(@RequestBody User user, UriComponentsBuilder uri) throws UserExistsException {
+	public ResponseEntity<Void> createUser(@Valid @RequestBody User user, UriComponentsBuilder uri)
+			throws UserExistsException {
 		try {
 			service.createUser(user);
 			HttpHeaders header = new HttpHeaders();
 			header.setLocation(uri.path("/users/{id}").buildAndExpand(user.getId()).toUri());
-			return new ResponseEntity<Void>(header,HttpStatus.CREATED);
+			return new ResponseEntity<Void>(header, HttpStatus.CREATED);
 		} catch (UserExistsException ex) {
 			throw new ResponseStatusException(HttpStatus.UPGRADE_REQUIRED, ex.getMessage());
 		}
@@ -47,7 +54,7 @@ public class UserController {
 	}
 
 	@GetMapping("/users/{id}")
-	public Optional<User> getUserByID(@PathVariable("id") int id) throws UserNotFoundException {
+	public Optional<User> getUserByID(@PathVariable("id") @Min(1) int id) throws UserNotFoundException {
 		try {
 			return service.getUserByID(id);
 		} catch (UserNotFoundException ex) {
@@ -57,8 +64,13 @@ public class UserController {
 	}
 
 	@GetMapping("/users/byusername/{username}")
-	public User getUserByUserName(@PathVariable("username") String username) {
-		return service.getUserByUsername(username);
+	public User getUserByUserName(@PathVariable("username") String username) throws UsernameNotFoundException {
+		User user = service.getUserByUsername(username);
+
+		if (user == null) {
+			throw new UsernameNotFoundException("User: '" + username + "' not found in user repository");
+		}
+		return user;
 	}
 
 	@PutMapping("/users/{id}")
@@ -75,4 +87,5 @@ public class UserController {
 	public void deleteUser(@PathVariable("id") int id) {
 		service.deleteUser(id);
 	}
+
 }

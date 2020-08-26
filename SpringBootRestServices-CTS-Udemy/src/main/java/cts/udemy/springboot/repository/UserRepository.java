@@ -9,4 +9,6 @@ import cts.udemy.springboot.entity.User;
 public interface UserRepository extends JpaRepository<User, Integer> {
 
 	public User findByUsername(String username);
+	
+	
 }

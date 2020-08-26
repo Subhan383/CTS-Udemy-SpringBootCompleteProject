@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import cts.udemy.springboot.entity.User;
 import cts.udemy.springboot.exceptions.UserExistsException;
 import cts.udemy.springboot.exceptions.UserNotFoundException;
+import cts.udemy.springboot.exceptions.UsernameNotFoundException;
 import cts.udemy.springboot.repository.UserRepository;
 
 @Service
@@ -29,9 +30,9 @@ public class UserService {
 		return users;
 	}
 
-	public User createUser(User user) throws UserExistsException{
-		User existedUser=repo.findByUsername(user.getUsername());
-		if(existedUser!=null) {
+	public User createUser(User user) throws UserExistsException {
+		User existedUser = repo.findByUsername(user.getUsername());
+		if (existedUser != null) {
 			throw new UserExistsException("User Already Existed, Please Select a Unique Username");
 		}
 		return repo.save(user);
@@ -46,6 +47,7 @@ public class UserService {
 	}
 
 	public User getUserByUsername(String username) {
+
 		return repo.findByUsername(username);
 
 	}
@@ -69,4 +71,5 @@ public class UserService {
 		repo.deleteById(id);
 
 	}
+
 }
