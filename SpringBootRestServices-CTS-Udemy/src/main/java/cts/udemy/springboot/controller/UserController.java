@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -29,23 +30,24 @@ import cts.udemy.springboot.service.UserService;
 
 @RestController
 @Validated
+@RequestMapping(value="/users")
 public class UserController {
 
 	@Autowired
 	UserService service;
 
-	@GetMapping("/users")
+	@GetMapping
 	public List<User> getAllUsers() {
 		return service.getAllUsers();
 	}
 
-	@PostMapping("/users")
+	@PostMapping
 	public ResponseEntity<Void> createUser(@Valid @RequestBody User user, UriComponentsBuilder uri)
 			throws UserExistsException {
 		try {
 			service.createUser(user);
 			HttpHeaders header = new HttpHeaders();
-			header.setLocation(uri.path("/users/{id}").buildAndExpand(user.getId()).toUri());
+			header.setLocation(uri.path("/users/{id}").buildAndExpand(user.getUserid()).toUri());
 			return new ResponseEntity<Void>(header, HttpStatus.CREATED);
 		} catch (UserExistsException ex) {
 			throw new ResponseStatusException(HttpStatus.UPGRADE_REQUIRED, ex.getMessage());
@@ -53,7 +55,7 @@ public class UserController {
 
 	}
 
-	@GetMapping("/users/{id}")
+	@GetMapping("/{id}")
 	public Optional<User> getUserByID(@PathVariable("id") @Min(1) int id) throws UserNotFoundException {
 		try {
 			return service.getUserByID(id);
@@ -63,7 +65,7 @@ public class UserController {
 
 	}
 
-	@GetMapping("/users/byusername/{username}")
+	@GetMapping("/byusername/{username}")
 	public User getUserByUserName(@PathVariable("username") String username) throws UsernameNotFoundException {
 		User user = service.getUserByUsername(username);
 
@@ -73,7 +75,7 @@ public class UserController {
 		return user;
 	}
 
-	@PutMapping("/users/{id}")
+	@PutMapping("/{id}")
 	public User updateUser(@RequestBody User user, @PathVariable("id") int id) throws UserNotFoundException {
 		try {
 			return service.updateUser(id, user);
@@ -83,7 +85,7 @@ public class UserController {
 
 	}
 
-	@DeleteMapping("/users/{id}")
+	@DeleteMapping("/{id}")
 	public void deleteUser(@PathVariable("id") int id) {
 		service.deleteUser(id);
 	}

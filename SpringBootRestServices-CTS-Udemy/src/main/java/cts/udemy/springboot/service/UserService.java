@@ -54,7 +54,7 @@ public class UserService {
 
 	@SuppressWarnings("unlikely-arg-type")
 	public User updateUser(int id, User user) throws UserNotFoundException {
-		user.setId(id);
+		user.setUserid(id);
 		if (!user.equals(id)) {
 			throw new UserNotFoundException("User not found in User DB, Please provide the correct UserID");
 		}
