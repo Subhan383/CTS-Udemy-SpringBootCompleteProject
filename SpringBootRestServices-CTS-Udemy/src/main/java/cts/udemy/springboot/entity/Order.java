@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Table(name = "orders")
 @Entity(name = "orders")
@@ -18,9 +19,11 @@ public class Order extends RepresentationModel {
 
 	@Id
 	@GeneratedValue
+	@JsonView(JsonViews.Internal.class)
 	private int orderid;
 
 	@Column(name="orderdescription")
+	@JsonView(JsonViews.Internal.class)
 	private String orderdescription;
 
 	@ManyToOne(fetch = FetchType.LAZY)

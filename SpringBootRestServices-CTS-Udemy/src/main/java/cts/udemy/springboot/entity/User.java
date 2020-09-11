@@ -14,37 +14,46 @@ import javax.validation.constraints.Size;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity(name = "user")
 @Table(name = "user")
-@JsonFilter(value = "userFilter")
+//@JsonFilter(value = "userFilter") -- Used for MappingJacksonValue filtering section (JacksonMappingFiltering GIT Branch)
 public class User extends RepresentationModel {
 
 	@Id
 	@GeneratedValue
+	@JsonView(JsonViews.External.class)
 	private int userid;
 
 	@NotBlank(message = "Username should not be empty")
 	@Column(name = "USER_NAME", length = 50, nullable = false, unique = true)
+	@JsonView(JsonViews.External.class)
 	private String username;
 
 	@Size(min = 3, message = "First name should be atleast 3 characters")
 	@Column(name = "FIRST_NAME", length = 50, nullable = false)
+	@JsonView(JsonViews.External.class)
 	private String firstname;
 
 	@Column(name = "LAST_NAME", length = 50, nullable = false)
+	@JsonView(JsonViews.External.class)
 	private String lastname;
 
 	@Column(name = "EMAIL_ADDRESS", length = 50, nullable = false)
+	@JsonView(JsonViews.External.class)
 	private String email;
 
 	@Column(name = "ROLE", length = 50, nullable = false)
+	@JsonView(JsonViews.Internal.class)
 	private String role;
 
 	@Column(name = "SSN", length = 50, nullable = false, unique = true)
+	@JsonView(JsonViews.Internal.class)
 	private String ssn;
 
 	@OneToMany(mappedBy = "user")
+	@JsonView(JsonViews.Internal.class)
 	private List<Order> order;
 
 	public User() {
